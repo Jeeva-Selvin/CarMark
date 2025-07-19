@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@keyframes horisontalloop {
+  0%   {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+.infloop{
+  animation: horisontalloop 15s linear infinite;
+}
