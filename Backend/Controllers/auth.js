@@ -5,7 +5,7 @@ import { generateToken } from "../config/jwt.js";
 
 dotenv.config();
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   const { name, password } = req.body;
 
   if (!name || !password) {
@@ -24,11 +24,11 @@ export const signup = async (req, res) => {
 
     const newUser = new User({ name, password: hashedPassword });
     await newUser.save();
-    generateToken(newUser._id, res);
+    toc = generateToken(newUser._id, res);
+    res.send(toc);
   } catch (error) {
     console.error("Error during signup:", error);
     return res.status(500).json({ message: "Internal server error", error });
-  } finally {
   }
 };
 export const login = async (req, res) => {
@@ -47,14 +47,12 @@ export const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    const token =  generateToken(user._id, res);
-    return res
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: { name: user.name },
-        token
-      });
+    const token = generateToken(user._id, res);
+    return res.status(200).json({
+      message: "Login successful",
+      user: { name: user.name },
+      token,
+    });
   } catch (error) {
     console.error("Error during login:", error);
     return res.status(500).json({ message: "Internal server error", error });
