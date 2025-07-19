@@ -5,7 +5,7 @@ import { generateToken } from "../config/jwt.js";
 
 dotenv.config();
 
-export const signup = async (req, res, next) => {
+export const signup = async (req, res) => {
   const { name, password } = req.body;
 
   if (!name || !password) {
@@ -18,14 +18,16 @@ export const signup = async (req, res, next) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt
-      .genSalt(10)
-      .then((salt) => bcrypt.hash(password, salt));
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({ name, password: hashedPassword });
     await newUser.save();
-    toc = generateToken(newUser._id, res);
-    res.send(toc);
+    const token = generateToken(newUser._id, res);
+    return res.status(201).json({
+      message: "User created successfully",
+      user: { id: newUser._id, name: newUser.name },
+      token,
+    });
   } catch (error) {
     console.error("Error during signup:", error);
     return res.status(500).json({ message: "Internal server error", error });
@@ -50,7 +52,7 @@ export const login = async (req, res) => {
     const token = generateToken(user._id, res);
     return res.status(200).json({
       message: "Login successful",
-      user: { name: user.name },
+      user: { id: user._id, name: user.name },
       token,
     });
   } catch (error) {

@@ -2,18 +2,26 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import instance from "../axios";
+import useAuthStore from "../store/store.js"
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
+  const { setIsAuthenticated } = useAuthStore();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await instance.post("signup", {
+      const response = await instance.post("/signup", {
         name,
         password,
-      });
+      },{withCredentials: true});
+      if (response.data.token) {
+        setIsAuthenticated(true);
+        localStorage.setItem("token", response.data.token);
+      }
+      console.log(response)
     } catch (error) {
       console.error("Error during login:", error);
     }
