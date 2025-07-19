@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors({
-  origin: 'https://carmark.netlify.app/login',
+  origin: 'https://carmark.netlify.app',
   credentials: true,
   sameSite:"none"
 }));
